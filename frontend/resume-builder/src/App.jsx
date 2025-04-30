@@ -17,6 +17,7 @@ const App = () => {
         </Routes>
       </Router>
     </div>
+
     <Toaster
         toastOptions={{
           className: "",
@@ -26,7 +27,7 @@ const App = () => {
         }}
     />
     </>
-  )
-}
+  );
+};
 
 export default App
