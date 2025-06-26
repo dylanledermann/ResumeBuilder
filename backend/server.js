@@ -30,9 +30,16 @@ app.use(
 app.use(express.json());
 
 //Routes
+const userRepository = require('./models/User');
+const userRepo = new userRepository(db); 
+
 const authRoutes = require('./routes/authRoutes')(userRepo);
-const resumeRoutes = require('./routes/resumeRoutes')(resumeRepo);
 app.use("/api/auth", authRoutes);
+
+const resumeRepository = require('./models/Resume');
+const resumeRepo = new resumeRepository(db); 
+
+const resumeRoutes = require('./routes/resumeRoutes')(resumeRepo);
 app.use("/api/resume", resumeRoutes);
 
 //Serve uploads folder
