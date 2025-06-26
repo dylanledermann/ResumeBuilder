@@ -3,18 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-const authRoutes = require('./routes/authRoutes');
-const resumeRoutes = require('./routes/resumeRoutes');
-
 const admin = require('firebase-admin');
-const fbPrivateKey = require('resumeBuilderPrivateKey.json');
+const fbPrivateKey = require('./resumeBuilderPrivateKey.json');
 
 //Initialize firebase app
 admin.initializeApp({
     credential: admin.credential.cert(fbPrivateKey),
 })
-
-console.log("Firebase Admin initialized");
 
 //Initialize firestore database
 const db = admin.firestore();
@@ -35,6 +30,8 @@ app.use(
 app.use(express.json());
 
 //Routes
+const authRoutes = require('./routes/authRoutes');
+const resumeRoutes = require('./routes/resumeRoutes');
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 
