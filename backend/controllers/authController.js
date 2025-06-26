@@ -51,12 +51,14 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-
+        console.log("1");
         const user = await User.findByEmail(email);
+        console.log("2");
         if (!user || !(await bcrypt.compare(password, user.password))){
+            console.log("3");
             return res.status(400).json({ message: "Invalid email or password"});
         }
-
+        console.log("4");
         //Return user data with JWT
         res.json({
             id: user.id,
@@ -65,6 +67,7 @@ const loginUser = async (req, res) => {
             profileImageUrl: user.profileImageUrl,
             token: generateToken(user.id),
         });
+        console.log("5");
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
