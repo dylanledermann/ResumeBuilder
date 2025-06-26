@@ -30,8 +30,8 @@ app.use(
 app.use(express.json());
 
 //Routes
-const authRoutes = require('./routes/authRoutes');
-const resumeRoutes = require('./routes/resumeRoutes');
+const authRoutes = require('./routes/authRoutes')(userRepo);
+const resumeRoutes = require('./routes/resumeRoutes')(resumeRepo);
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 
