@@ -2,6 +2,7 @@ import React from 'react'
 import TemplateOne from './TemplateOne';
 import TemplateTwo from './TemplateTwo';
 import TemplateThree from './TemplateThree';
+import TemplateFour from './TemplateFour';
 
 const RenderResume = ({templateId, resumeData, colorPalette, containerWidth}) => {
   switch(templateId) {
@@ -24,6 +25,14 @@ const RenderResume = ({templateId, resumeData, colorPalette, containerWidth}) =>
     case "03":
         return (
             <TemplateThree
+                resumeData={resumeData}
+                colorPalette={colorPalette}
+                continerWidth={containerWidth}
+            />
+        );
+    case "04":
+        return (
+            <TemplateFour
                 resumeData={resumeData}
                 colorPalette={colorPalette}
                 continerWidth={containerWidth}
