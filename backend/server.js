@@ -14,6 +14,8 @@ admin.initializeApp({
     credential: admin.credential.cert(fbPrivateKey),
 })
 
+console.log("Firebase Admin initialized");
+
 //Initialize firestore database
 const db = admin.firestore();
 
