@@ -30,17 +30,20 @@ app.use(
 app.use(express.json());
 
 //Routes
-const userRepository = require('./models/User');
-const userRepo = new userRepository(db); 
+const FieldValue = admin.firestore.FieldValue;
+//User route
+const UserModel = require('./models/User');
+const userRepo = new UserModel(db, FieldValue);
 
 const authRoutes = require('./routes/authRoutes')(userRepo);
 app.use("/api/auth", authRoutes);
-
-const resumeRepository = require('./models/Resume');
-const resumeRepo = new resumeRepository(db); 
+//Resume route
+const ResumeModel = require('./models/Resume');
+const resumeRepo = new ResumeModel(db, FieldValue);
 
 const resumeRoutes = require('./routes/resumeRoutes')(resumeRepo);
 app.use("/api/resume", resumeRoutes);
+
 
 //Serve uploads folder
 app.use(

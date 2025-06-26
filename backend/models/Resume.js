@@ -83,20 +83,18 @@ const ResumeSchema = new mongoose.Schema(
 
 module.exports = mongoose.model("Resume", ResumeSchema);*/
 
-const admin = require('firebase-admin');
-const db = admin.firestore();
-const FieldValue = admin.firestore.FieldValue;
-
 class ResumeModel {
-    constructor() {
+    constructor(db, FieldValue) {
+        if (!db) throw new Error('Firestore db instance is required');
         this.collection = db.collection('resumes');
+        this.FieldValue = FieldValue;
     }
 
     async create(resumeData){
         const dataWithTimestamps = {
             ...resumeData,
-            updatedAt: FieldValue.serverTimestamp(),
-            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: this.FieldValue.serverTimestamp(),
+            createdAt: this.FieldValue.serverTimestamp(),
         }
 
         try {
@@ -137,7 +135,7 @@ class ResumeModel {
     async update(resumeId, userId, resumeData) {
         const dataWithTimestamp = {
             ...resumeData,
-            updatedAt: FieldValue.serverTimestamp(),
+            updatedAt: this.FieldValue.serverTimestamp(),
         };
         
         try {
@@ -167,4 +165,4 @@ class ResumeModel {
     }
 }
 
-module.exports = new ResumeModel();
+module.exports = ResumeModel;

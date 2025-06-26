@@ -12,20 +12,18 @@ const UserSchema = new mongoose.Schema(
 
 module.exports = mongoose.model("User", UserSchema);*/
 
-const admin = require('firebase-admin');
-const db = admin.firestore();
-const FieldValue = admin.firestore.FieldValue;
-
 class UserModel {
-    constructor() {
-        this.collection = db.collection('users')
+    constructor(db, FieldValue) {
+        if (!db) throw new Error('Firestore db instance is required');
+        this.collection = db.collection('users');
+        this.FieldValue = FieldValue; 
     }
 
     async create(userId, userData) {
         const dataWithTimestamps = {
             ...userData,
-            updatedAt: FieldValue.serverTimestamp(),
-            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: this.FieldValue.serverTimestamp(),
+            createdAt: this.FieldValue.serverTimestamp(),
         };
 
         try {
@@ -40,7 +38,7 @@ class UserModel {
     async update(userId, userData) {
         const data = {
             ...userData,
-            updatedAt: FieldValue.serverTimestamp(),
+            updatedAt: this.FieldValue.serverTimestamp(),
         };
         
         try {
@@ -66,4 +64,4 @@ class UserModel {
     }
 }
 
-module.exports = new UserModel();
+module.exports = UserModel;
