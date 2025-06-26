@@ -11,9 +11,11 @@ const createResume = async (req, res) => {
 
         //Default template
         const defaultResumeData = {
+            userId: req.user.id,
+            title,
             profileInfo: {
                 profileImg: null,
-                previewUrl: "",
+                profilePreviewUrl: "",
                 fullName: "",
                 designation: "",
                 summary: "",
@@ -74,9 +76,7 @@ const createResume = async (req, res) => {
         };
 
         const newResume = await Resume.create({
-            userId: req.user._id,
-            title,
-            ...defaultResumeData,
+            defaultResumeData,
         });
 
         res.status(201).json(newResume);
@@ -90,7 +90,7 @@ const createResume = async (req, res) => {
 // @access Private
 const getUserResumes = async (req, res) => {
     try {
-        const resumes = await Resume.find({ userId: req.user._id }).sort({
+        const resumes = await Resume.findByUserId(req.user.id).sort({
             updatedAt: -1,
         });
         res.json(resumes);
@@ -104,7 +104,7 @@ const getUserResumes = async (req, res) => {
 // @access Private
 const getResumeById = async (req, res) => {
     try {
-        const resume = await Resume.findOne({ _id: req.params.id, userId: req.user._id });
+        const resume = await Resume.findById(req.params.id, req.user.id);
         if (!resume) {
             return res.status(404).json({ message: "Resume not found" });
         }
@@ -119,20 +119,7 @@ const getResumeById = async (req, res) => {
 // @access Private
 const updateResume = async (req, res) => {
     try {
-        const resume = await Resume.findOne({
-            _id: req.params.id,
-            userId: req.user._id,
-        });
-
-        if(!resume) {
-            return res.status(404).json({ message: "Resume not found or unauthorized" });
-        }
-
-        //Merge updates from req.body into existing resume
-        Object.assign(resume, req.body);
-
-        //save resume
-        const savedResume = await resume.save();
+        const savedResume = await Resume.update( req.params.id, req.user.id, req.body);
         res.json(savedResume);
     } catch (error) {
         res.status(500).json({ message: "Failed to update resume", error: error.message });
@@ -144,18 +131,14 @@ const updateResume = async (req, res) => {
 // @access Private
 const deleteResume = async (req, res) => {
     try {
-        const resume = await Resume.findOne({
-            _id: req.params.id,
-            userId: req.user._id,
-        });
+        const resume = await Resume.findById(req.params.id, req.user.id);
 
         if(!resume){
             return res.status(404).json({ message: "Resume not found or unauthorized" });
         }
 
-        //Delete thumbnailLink and profilePreviewUrl images from uploads folder
+        //Delete local files
         const uploadsFolder = path.join(__dirname, '..', 'uploads');
-        const baseUrl = `${req.profocol}://${req.get("host")}`;
 
         if(resume.thumbnailLink) {
             const oldThumbnail = path.join(uploadsFolder, path.basename(resume.thumbnailLink));
@@ -167,15 +150,7 @@ const deleteResume = async (req, res) => {
             if(fs.existsSync(oldProfile)) fs.unlinkSync(oldProfile);
         }
 
-        const deleted = await Resume.findOneAndDelete({
-            _id: req.params.id,
-            userId: req.user._id,
-        });
-
-        if (!deleted) {
-            return res.status(404).json({ message: "Resume not found or unauthorized" });
-        }
-
+        await Resume.delete(req.params.id, req.user.id);
         res.json({ message: "Resume deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Failed to delete resume", error: error.message });

@@ -15,7 +15,7 @@ const registerUser = async (req, res) => {
         const { name, email, password, profileImageUrl } = req.body;
 
         //check if user already exists
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findByEmail({ email });
         if (userExists) {
             return res.status(400).json({ message: "User already exists"});
         }
@@ -25,7 +25,7 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         //Create new user
-        const user = await User.create({
+        const user = await User.create(email, {
             name,
             email,
             password: hashedPassword,
@@ -52,7 +52,7 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findByEmail({ email });
         if (!user || !(await bcrypt.compare(password, user.password))){
             return res.status(400).json({ message: "Invalid email or password"});
         }
@@ -75,11 +75,13 @@ const loginUser = async (req, res) => {
 // @access Private (Requires JWT)
 const getUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select("-password");
+        const user = await User.findById(req.user.id);
         if(!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.json(user);
+
+        const { password, ...userData } = user;
+        res.json(userData);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
