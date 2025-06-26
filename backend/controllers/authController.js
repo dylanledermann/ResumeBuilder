@@ -34,11 +34,11 @@ const registerUser = async (req, res) => {
 
         //return user data with JWT
         res.status(201).json({
-            _id: user._id,
+            id: user.id,
             name: user.name,
             email: user.email,
             profileImageUrl: user.profileImageUrl,
-            token: generateToken(user._id),
+            token: generateToken(user.id),
         });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -59,11 +59,11 @@ const loginUser = async (req, res) => {
 
         //Return user data with JWT
         res.json({
-            _id: user._id,
+            id: user.id,
             name: user.name,
             email: user.email,
             profileImageUrl: user.profileImageUrl,
-            token: generateToken(user._id),
+            token: generateToken(user.id),
         });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
